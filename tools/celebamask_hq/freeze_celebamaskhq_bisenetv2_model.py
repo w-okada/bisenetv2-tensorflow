@@ -43,7 +43,7 @@ def load_graph_from_ckpt_file(weights_path):
     :return:
     """
     # construct compute graph
-    input_tensor = tf.placeholder(dtype=tf.float32, shape=[1, 448, 448, 3], name='input_tensor')
+    input_tensor = tf.placeholder(dtype=tf.float32, shape=[1, None, None, 3], name='input_tensor')
     net = bisenet_v2.BiseNetV2(phase='test', cfg=CFG)
     prediction = net.inference(
         input_tensor=input_tensor,
@@ -129,7 +129,7 @@ if __name__ == '__main__':
         graph_def=bisenetv2_gd
     )
 
-    # optimize_inference_model(
-    #     frozen_pb_file_path=args.frozen_pb_file_path,
-    #     output_pb_file_path=args.optimized_pb_file_path
-    # )
+    optimize_inference_model(
+        frozen_pb_file_path=args.frozen_pb_file_path,
+        output_pb_file_path=args.optimized_pb_file_path
+    )

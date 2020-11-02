@@ -580,9 +580,10 @@ class _GuidedAggregation(cnn_basenet.CNNBaseModel):
                     use_bias=False,
                     need_activate=False
                 )
+                x_shape = tf.shape(detail_input_tensor) # added
                 semantic_branch_upsample = tf.image.resize_bilinear(
                     semantic_branch_upsample,
-                    detail_input_tensor.shape[1:3],
+                    x_shape[1:3],
                     name='semantic_upsample_features'
                 )
                 semantic_branch_upsample = self.sigmoid(semantic_branch_upsample, name='semantic_upsample_sigmoid')
@@ -598,9 +599,10 @@ class _GuidedAggregation(cnn_basenet.CNNBaseModel):
                     semantic_branch_remain,
                     name='guided_semantic_features'
                 )
+                x_shape = tf.shape(detail_input_tensor) # added
                 guided_features_upsample = tf.image.resize_bilinear(
                     guided_features_downsample,
-                    detail_input_tensor.shape[1:3],
+                    x_shape[1:3],
                     name='guided_upsample_features'
                 )
                 guided_features = tf.add(guided_features_remain, guided_features_upsample, name='fused_features')
@@ -681,8 +683,9 @@ class _SegmentationHead(cnn_basenet.CNNBaseModel):
         input_tensor = kwargs['input_tensor']
         name_scope = kwargs['name']
         ratio = kwargs['upsample_ratio']
-        input_tensor_size = input_tensor.get_shape().as_list()[1:3]
-        output_tensor_size = [int(tmp * ratio) for tmp in input_tensor_size]
+        input_tensor_size = tf.shape(input_tensor)
+        output_tensor_size = [tf.multiply(input_tensor_size[1],ratio), tf.multiply(input_tensor_size[2],ratio)]
+        
         feature_dims = kwargs['feature_dims']
         classes_nums = kwargs['classes_nums']
         if 'padding' in kwargs:
